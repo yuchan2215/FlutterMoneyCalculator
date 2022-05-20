@@ -124,6 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
               maxLines: 1,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               controller: textController[index],
+              keyboardType: TextInputType.number,
               decoration: const InputDecoration(
                   counterText: '',
                   border: OutlineInputBorder(),
