@@ -34,6 +34,27 @@ class _MyHomePageState extends State<MyHomePage> {
   int sumMoney = 0;
   var isSelected = <bool>[true, false, false, false];
   final List<int> moneyTypes = [1, 5, 10, 50, 100, 1000, 2000, 5000, 10000];
+  var moneys = <int>[0, 0, 0, 0, 0, 0, 0, 0, 0];
+  var textController = List.generate(9, (index) => TextEditingController(text: ""));
+
+  //合計金額を計算して更新通知をする。
+  void calcSumMoney() {
+    setState(() {
+      int tempSum = 0;
+      for (int i = 0; i < moneyTypes.length; i++) {
+        tempSum += moneyTypes[i] * moneys[i];
+      }
+      sumMoney = tempSum;
+    });
+  }
+
+  //入力部から送られてくるメッセージをハンドルする。
+  void handleText(String e, int index) {
+    //intにパースできなければ0を入れる
+    int value = int.tryParse(textController[index].value.text) ?? 0;
+    moneys[index] = value;
+    calcSumMoney();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,6 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
               maxLength: 10,
               maxLines: 1,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              controller: textController[index],
               decoration: const InputDecoration(
                   counterText: '',
                   border: OutlineInputBorder(),
@@ -104,6 +126,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     left: 10,
                     bottom: 20,
                   )),
+              onChanged: (e) {
+                handleText(e, index);
+              },
             ),
           ),
         ),
