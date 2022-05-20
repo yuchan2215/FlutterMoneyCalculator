@@ -35,7 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var isSelected = <bool>[true, false, false, false];
   final List<int> moneyTypes = [1, 5, 10, 50, 100, 1000, 2000, 5000, 10000];
   var moneys = <int>[0, 0, 0, 0, 0, 0, 0, 0, 0];
-  var textController = List.generate(9, (index) => TextEditingController(text: ""));
+  var textController = List.generate(9, (index) => TextEditingController(text: "0"));
 
   //合計金額を計算して更新通知をする。
   void calcSumMoney() {
