@@ -52,10 +52,16 @@ class _MyHomePageState extends State<MyHomePage> {
   void handleText(String e, int index) {
     //intにパースできなければ0を入れる
     int value = int.tryParse(textController[index].value.text) ?? 0;
+    int length = value.toString().length;
     //もし不正な入力値(空または文字列の長さが1ではないが、数字上は0)ならリセットする
     if(e.isEmpty || (value == 0 && e.length != 1)){
       textController[index].text = "0";
       textController[index].selection = TextSelection.fromPosition(const TextPosition(offset: 1));
+      //0xxxxの形式になったとき、0を消してカーソルを戻す。
+    }else if(length != e.length){
+      int newOffset = textController[index].selection.extent.offset -1;
+      textController[index].text = value.toString();
+      textController[index].selection = TextSelection.fromPosition(TextPosition(offset: newOffset));
     }
     moneys[index] = value;
     calcSumMoney();
