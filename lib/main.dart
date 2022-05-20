@@ -54,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: inputItems(index),
                       ));
                     })),
+            moneyDisplay(),
           ]),
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
@@ -117,5 +118,20 @@ class _MyHomePageState extends State<MyHomePage> {
     ]);
   }
 
+  /// 金額を表示する
+  Row moneyDisplay() {
+    return Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          const Text("合計金額:"),
+          Text(
+            "$sumMoney",
+            style: const TextStyle(
+              fontSize: 40.0,
+            ),
+          ),
+          const Text("円"),
+        ]);
   }
 }
