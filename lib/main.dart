@@ -30,27 +30,30 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+final List<int> moneyTypes = [1, 5, 10, 50, 100, 500, 1000, 2000, 5000, 10000];
+
 class _MyHomePageState extends State<MyHomePage> {
   int sumMoney = 0;
   var isSelected = <bool>[true, false, false, false];
-  final buttonMoneyType = <int>[1,10,20,50];
-  final List<int> moneyTypes = [1, 5, 10, 50, 100, 1000, 2000, 5000, 10000];
-  var moneys = <int>[0, 0, 0, 0, 0, 0, 0, 0, 0];
-  var textController = List.generate(9, (index) => TextEditingController(text: "0"));
+  final buttonMoneyType = <int>[1, 10, 20, 50];
+  var moneys = List.generate(moneyTypes.length, (index) => 0);
+  var textController = List.generate(
+      moneyTypes.length, (index) => TextEditingController(text: "0"));
 
-  void onButtonPressed(int index,int value){
+  void onButtonPressed(int index, int value) {
     int addValue = getSelectMoneyType() * value;
     String nowValue = textController[index].value.text;
     int nowIntValue = int.tryParse(nowValue) ?? 0;
     int newValue = nowIntValue + addValue;
-    if(newValue < 0)newValue = 0;
+    if (newValue < 0) newValue = 0;
     moneys[index] = newValue;
     textController[index].text = newValue.toString();
     calcSumMoney();
   }
-  int getSelectMoneyType(){
-    for(int i=0;i<buttonMoneyType.length;i++){
-      if(isSelected[i])return buttonMoneyType[i];
+
+  int getSelectMoneyType() {
+    for (int i = 0; i < buttonMoneyType.length; i++) {
+      if (isSelected[i]) return buttonMoneyType[i];
     }
     return 0;
   }
@@ -72,14 +75,16 @@ class _MyHomePageState extends State<MyHomePage> {
     int value = int.tryParse(textController[index].value.text) ?? 0;
     int length = value.toString().length;
     //もし不正な入力値(空または文字列の長さが1ではないが、数字上は0)ならリセットする
-    if(e.isEmpty || (value == 0 && e.length != 1)){
+    if (e.isEmpty || (value == 0 && e.length != 1)) {
       textController[index].text = "0";
-      textController[index].selection = TextSelection.fromPosition(const TextPosition(offset: 1));
+      textController[index].selection =
+          TextSelection.fromPosition(const TextPosition(offset: 1));
       //0xxxxの形式になったとき、0を消してカーソルを戻す。
-    }else if(length != e.length){
-      int newOffset = textController[index].selection.extent.offset -1;
+    } else if (length != e.length) {
+      int newOffset = textController[index].selection.extent.offset - 1;
       textController[index].text = value.toString();
-      textController[index].selection = TextSelection.fromPosition(TextPosition(offset: newOffset));
+      textController[index].selection =
+          TextSelection.fromPosition(TextPosition(offset: newOffset));
     }
     moneys[index] = value;
     calcSumMoney();
