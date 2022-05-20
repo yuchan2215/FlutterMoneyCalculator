@@ -31,7 +31,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _sumMoney = 0;
+  int sumMoney = 0;
+  var isSelected = <bool>[true, false, false, false];
   final List<int> moneyTypes = [1, 5, 10, 50, 100, 1000, 2000, 5000, 10000];
 
   @override
@@ -54,6 +55,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: inputItems(index),
                       ));
                     })),
+            const SizedBox(height: 10.0),
+            toggleMoneyTypes(),
             moneyDisplay(),
           ]),
         ),
@@ -116,6 +119,27 @@ class _MyHomePageState extends State<MyHomePage> {
             child: const Text("+", textAlign: TextAlign.center),
           ))
     ]);
+  }
+
+  //金種切り替えのトグルボタン
+  ToggleButtons toggleMoneyTypes() {
+    return ToggleButtons(
+      isSelected: isSelected,
+      onPressed: (int index) {
+        setState(() {
+          for (int buttonIndex = 0;
+              buttonIndex < isSelected.length;
+              buttonIndex++) {
+            if (buttonIndex == index) {
+              isSelected[buttonIndex] = true;
+            } else {
+              isSelected[buttonIndex] = false;
+            }
+          }
+        });
+      },
+      children: const [Text("1"), Text("10"), Text("20"), Text("50")],
+    );
   }
 
   /// 金額を表示する
