@@ -33,9 +33,27 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int sumMoney = 0;
   var isSelected = <bool>[true, false, false, false];
+  final buttonMoneyType = <int>[1,10,20,50];
   final List<int> moneyTypes = [1, 5, 10, 50, 100, 1000, 2000, 5000, 10000];
   var moneys = <int>[0, 0, 0, 0, 0, 0, 0, 0, 0];
   var textController = List.generate(9, (index) => TextEditingController(text: "0"));
+
+  void onButtonPressed(int index,int value){
+    int addValue = getSelectMoneyType() * value;
+    String nowValue = textController[index].value.text;
+    int nowIntValue = int.tryParse(nowValue) ?? 0;
+    int newValue = nowIntValue + addValue;
+    if(newValue < 0)newValue = 0;
+    moneys[index] = newValue;
+    textController[index].text = newValue.toString();
+    calcSumMoney();
+  }
+  int getSelectMoneyType(){
+    for(int i=0;i<buttonMoneyType.length;i++){
+      if(isSelected[i])return buttonMoneyType[i];
+    }
+    return 0;
+  }
 
   //合計金額を計算して更新通知をする。
   void calcSumMoney() {
@@ -112,7 +130,7 @@ class _MyHomePageState extends State<MyHomePage> {
           height: 40.0,
           child: ElevatedButton(
             onPressed: () {
-              //TODO 引くボタンが押された時のイベント
+              onButtonPressed(index, -1);
             },
             child: const Text("-", textAlign: TextAlign.center),
           )),
@@ -151,7 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
           height: 40.0,
           child: ElevatedButton(
             onPressed: () {
-              //TODO 足すボタンが押された時のイベント
+              onButtonPressed(index, 1);
             },
             child: const Text("+", textAlign: TextAlign.center),
           ))
