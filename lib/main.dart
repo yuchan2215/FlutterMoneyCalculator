@@ -34,6 +34,38 @@ class _MyHomePageState extends State<MyHomePage> {
   int sumMoney = 0;
   var isSelected = <bool>[true, false, false, false];
   final List<int> moneyTypes = [1, 5, 10, 50, 100, 1000, 2000, 5000, 10000];
+  var moneys = <int>[0, 0, 0, 0, 0, 0, 0, 0, 0];
+  var textController = List.generate(9, (index) => TextEditingController(text: "0"));
+
+  //合計金額を計算して更新通知をする。
+  void calcSumMoney() {
+    setState(() {
+      int tempSum = 0;
+      for (int i = 0; i < moneyTypes.length; i++) {
+        tempSum += moneyTypes[i] * moneys[i];
+      }
+      sumMoney = tempSum;
+    });
+  }
+
+  //入力部から送られてくるメッセージをハンドルする。
+  void handleText(String e, int index) {
+    //intにパースできなければ0を入れる
+    int value = int.tryParse(textController[index].value.text) ?? 0;
+    int length = value.toString().length;
+    //もし不正な入力値(空または文字列の長さが1ではないが、数字上は0)ならリセットする
+    if(e.isEmpty || (value == 0 && e.length != 1)){
+      textController[index].text = "0";
+      textController[index].selection = TextSelection.fromPosition(const TextPosition(offset: 1));
+      //0xxxxの形式になったとき、0を消してカーソルを戻す。
+    }else if(length != e.length){
+      int newOffset = textController[index].selection.extent.offset -1;
+      textController[index].text = value.toString();
+      textController[index].selection = TextSelection.fromPosition(TextPosition(offset: newOffset));
+    }
+    moneys[index] = value;
+    calcSumMoney();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,6 +129,8 @@ class _MyHomePageState extends State<MyHomePage> {
               maxLength: 10,
               maxLines: 1,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              controller: textController[index],
+              keyboardType: TextInputType.number,
               decoration: const InputDecoration(
                   counterText: '',
                   border: OutlineInputBorder(),
@@ -104,6 +138,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     left: 10,
                     bottom: 20,
                   )),
+              onChanged: (e) {
+                handleText(e, index);
+              },
             ),
           ),
         ),
