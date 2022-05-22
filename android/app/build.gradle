@@ -47,17 +47,24 @@ android {
         applicationId "xyz.miyayu.flutter.flutter_money_calc"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
-        minSdkVersion flutter.minSdkVersion
+        minSdkVersion 21
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
 
     buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+        buildTypes {
+            debug {
+                resValue "string", "app_name", "(d)硬貨計算機"
+                applicationIdSuffix ".debug"
+                versionNameSuffix "-d"
+                signingConfig signingConfigs.debug
+            }
+            release {
+                resValue "string", "app_name", "財布計算機"
+
+            }
         }
     }
 }
