@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 void main() {
   runApp(const MyApp());
@@ -39,6 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var moneys = List.generate(moneyTypes.length, (index) => 0);
   var textController = List.generate(
       moneyTypes.length, (index) => TextEditingController(text: "0"));
+  Future<PackageInfo> info = PackageInfo.fromPlatform();
 
   void onButtonPressed(int index, int value) {
     int addValue = getSelectMoneyType() * value;
@@ -142,15 +144,26 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Colors.blue,
             ),
             child: Text("財布の中身計算機")),
-        AboutListTile(
-          icon: const Icon(Icons.info),
-          applicationIcon: myAppIcon(),
-          applicationVersion: '1.0.0',
-          applicationName: '財布の中身計算機',
-          applicationLegalese: '\u{a9} 2022 Miyayu',
-          aboutBoxChildren: aboutBox(context),
-          child: const Text("このアプリについて"),
-        )
+        FutureBuilder<PackageInfo>(
+          future: info,
+          builder: (BuildContext context, AsyncSnapshot<PackageInfo> snapshot) {
+            if (snapshot.hasData) {
+              String version = snapshot.data?.version ?? "";
+              String title = snapshot.data?.appName ?? "";
+              return AboutListTile(
+                icon: const Icon(Icons.info),
+                applicationIcon: myAppIcon(),
+                applicationVersion: version,
+                applicationName: title,
+                applicationLegalese: '\u{a9} 2022 Miyayu',
+                aboutBoxChildren: aboutBox(context),
+                child: const Text("このアプリについて"),
+              );
+            } else {
+              return const CircularProgressIndicator();
+            }
+          },
+        ),
       ]),
     );
   }
