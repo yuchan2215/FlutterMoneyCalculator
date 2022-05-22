@@ -93,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: buildDrawer(),
       appBar: AppBar(
         title: Text(widget.title),
       ),
@@ -116,6 +117,19 @@ class _MyHomePageState extends State<MyHomePage> {
           ]),
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  ///Drawer
+  Drawer buildDrawer() {
+    return Drawer(
+      child: ListView(children: const [
+        DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+            ),
+            child: Text("財布の中身計算機")),
+      ]),
     );
   }
 
