@@ -93,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: buildDrawer(),
+      drawer: buildDrawer(context),
       appBar: AppBar(
         title: Text(widget.title),
       ),
@@ -120,16 +120,54 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  ///ライセンス用説明文
+  List<Widget> aboutBox(BuildContext context) {
+    return <Widget>[
+      RichText(
+          text: TextSpan(
+        style: Theme.of(context).textTheme.bodyText1,
+        children: const <TextSpan>[
+          TextSpan(text: "各硬貨の枚数から合計を求める。"),
+        ],
+      ))
+    ];
+  }
+
   ///Drawer
-  Drawer buildDrawer() {
+  Drawer buildDrawer(BuildContext context) {
     return Drawer(
-      child: ListView(children: const [
-        DrawerHeader(
+      child: ListView(children: [
+        const DrawerHeader(
             decoration: BoxDecoration(
               color: Colors.blue,
             ),
             child: Text("財布の中身計算機")),
+        AboutListTile(
+          icon: const Icon(Icons.info),
+          applicationIcon: myAppIcon(),
+          applicationVersion: '1.0.0',
+          applicationName: '財布の中身計算機',
+          applicationLegalese: '\u{a9} 2022 Miyayu',
+          aboutBoxChildren: aboutBox(context),
+          child: const Text("このアプリについて"),
+        )
       ]),
+    );
+  }
+
+  ///About用アイコン
+  Center myAppIcon() {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 8.0),
+        child: SizedBox(
+          width: 32,
+          height: 32,
+          child: Image(
+            image: AssetImage('assets/icon/icon.png'),
+          ),
+        ),
+      ),
     );
   }
 
