@@ -102,6 +102,9 @@ lib/generated_plugin_registrant.dart
 
 # Icon must end with two \r
 Icon
+ios/Runner/Assets.xcassets/AppIcon.appiconset/*.png
+android/app/src/main/res/**/*.png
+android/app/src/main/res/values/colors.xml
 
 
 # Thumbnails
@@ -177,6 +180,8 @@ captures/
 # Keystore files
 *.jks
 *.keystore
+
+assets/icon
 
 # Google Services (e.g. APIs or Firebase)
 # google-services.json
