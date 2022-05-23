@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_money_calc/views/widgets/drawer.dart';
 import 'package:flutter_money_calc/views/widgets/mainPage/inputItem.dart';
 import 'package:intl/intl.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key, required this.title}) : super(key: key);
@@ -22,8 +21,6 @@ class MainPageState extends State<MainPage> {
 
   var selectedAddMoneyType = List.generate(
       addMoneyTypes.length, (index) => index == 0); //選択されている追加するお金の種類
-
-  Future<PackageInfo> info = PackageInfo.fromPlatform();
 
   String getSumMoneyString(){
     NumberFormat format = NumberFormat("#,##0");
@@ -52,7 +49,7 @@ class MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: buildDrawer(context),
+      drawer: DrawerItem(),
       appBar: AppBar(
         title: Text(widget.title),
       ),
@@ -78,68 +75,6 @@ class MainPageState extends State<MainPage> {
           ]),
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
-  }
-
-  ///ライセンス用説明文
-  List<Widget> aboutBox(BuildContext context) {
-    return <Widget>[
-      RichText(
-          text: TextSpan(
-        style: Theme.of(context).textTheme.bodyText1,
-        children: const <TextSpan>[
-          TextSpan(text: "各硬貨の枚数から合計を求める。"),
-        ],
-      ))
-    ];
-  }
-
-  ///Drawer
-  Drawer buildDrawer(BuildContext context) {
-    return Drawer(
-      child: ListView(children: [
-        const DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
-            ),
-            child: Text("財布の中身計算機")),
-        FutureBuilder<PackageInfo>(
-          future: info,
-          builder: (BuildContext context, AsyncSnapshot<PackageInfo> snapshot) {
-            if (snapshot.hasData) {
-              String version = snapshot.data?.version ?? "";
-              String title = snapshot.data?.appName ?? "";
-              return AboutListTile(
-                icon: const Icon(Icons.info),
-                applicationIcon: myAppIcon(),
-                applicationVersion: version,
-                applicationName: title,
-                applicationLegalese: '\u{a9} 2022 Miyayu',
-                aboutBoxChildren: aboutBox(context),
-                child: const Text("このアプリについて"),
-              );
-            } else {
-              return const CircularProgressIndicator();
-            }
-          },
-        ),
-      ]),
-    );
-  }
-
-  ///About用アイコン
-  Center myAppIcon() {
-    return const Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 8.0),
-        child: SizedBox(
-          width: 32,
-          height: 32,
-          child: Image(
-            image: AssetImage('assets/icon/icon.png'),
-          ),
-        ),
-      ),
     );
   }
 
