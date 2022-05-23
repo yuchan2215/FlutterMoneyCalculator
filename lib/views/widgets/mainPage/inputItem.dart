@@ -110,7 +110,8 @@ class InputItem extends StatelessWidget {
               onButtonPressed(index, 1);
             },
             child: const Text("+", textAlign: TextAlign.center),
-          ))
+          )),
+      const SizedBox(width: 10.0),
     ]);
   }
 }
