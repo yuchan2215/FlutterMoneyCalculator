@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_money_calc/views/widgets/mainPage/inputItem.dart';
+import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class MainPage extends StatefulWidget {
@@ -8,42 +10,20 @@ class MainPage extends StatefulWidget {
   final String title;
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<MainPage> createState() => MainPageState();
 }
 
 ///使用する硬貨の種類
 final List<int> moneyTypes = [1, 5, 10, 50, 100, 500, 1000, 2000, 5000, 10000];
 final List<int> addMoneyTypes = [1, 10, 20, 50];
 
-class _MainPageState extends State<MainPage> {
+class MainPageState extends State<MainPage> {
   int sumMoney = 0; //合計金額
 
   var selectedAddMoneyType = List.generate(
       addMoneyTypes.length, (index) => index == 0); //選択されている追加するお金の種類
 
-  var moneyInputTextController = List.generate(moneyTypes.length,
-      (index) => TextEditingController(text: "0")); //入力値をまとめておくコントローラー
-
   Future<PackageInfo> info = PackageInfo.fromPlatform();
-
-  //プラスまたはマイナスボタンが押された時
-  void onButtonPressed(int index, int value) {
-    int addValue = getSelectMoneyType() * value;
-    String nowValue = moneyInputTextController[index].value.text;
-    int nowIntValue = int.tryParse(nowValue) ?? 0;
-    int newValue = nowIntValue + addValue;
-    if (newValue < 0) newValue = 0;
-    moneyInputTextController[index].text = newValue.toString();
-    calcSumMoney();
-  }
-
-  //選択されている
-  int getSelectMoneyType() {
-    for (int i = 0; i < addMoneyTypes.length; i++) {
-      if (selectedAddMoneyType[i]) return addMoneyTypes[i];
-    }
-    return 0;
-  }
 
   //合計金額を計算して更新通知をする。
   void calcSumMoney() {
@@ -58,32 +38,11 @@ class _MainPageState extends State<MainPage> {
   }
 
   //コントローラーから、入力された数値を取得する。
-  int getInputMoney(int index){
+  int getInputMoney(int index) {
     TextEditingController controller = moneyInputTextController[index];
     String inputText = controller.value.text;
     int inputInt = int.tryParse(inputText) ?? 0;
     return inputInt;
-  }
-
-  //入力部から送られてくるメッセージをハンドルする。
-  void handleText(String e, int index) {
-    //intにパースできなければ0を入れる
-    int value = int.tryParse(moneyInputTextController[index].value.text) ?? 0;
-    int length = value.toString().length;
-    //もし不正な入力値(空または文字列の長さが1ではないが、数字上は0)ならリセットする
-    if (e.isEmpty || (value == 0 && e.length != 1)) {
-      moneyInputTextController[index].text = "0";
-      moneyInputTextController[index].selection =
-          TextSelection.fromPosition(const TextPosition(offset: 1));
-      //0xxxxの形式になったとき、0を消してカーソルを戻す。
-    } else if (length != e.length) {
-      int newOffset =
-          moneyInputTextController[index].selection.extent.offset - 1;
-      moneyInputTextController[index].text = value.toString();
-      moneyInputTextController[index].selection =
-          TextSelection.fromPosition(TextPosition(offset: newOffset));
-    }
-    calcSumMoney();
   }
 
   @override
@@ -103,9 +62,11 @@ class _MainPageState extends State<MainPage> {
                     itemBuilder: (BuildContext context, int index) {
                       return Card(
                           child: SizedBox(
-                            height: 50.0,
-                            child: inputItems(index),
-                          ));
+                              height: 50.0,
+                              child: InputItem(
+                                index: index,
+                                state: this,
+                              )));
                     })),
             const SizedBox(height: 10.0),
             toggleMoneyTypes(),
@@ -121,11 +82,11 @@ class _MainPageState extends State<MainPage> {
     return <Widget>[
       RichText(
           text: TextSpan(
-            style: Theme.of(context).textTheme.bodyText1,
-            children: const <TextSpan>[
-              TextSpan(text: "各硬貨の枚数から合計を求める。"),
-            ],
-          ))
+        style: Theme.of(context).textTheme.bodyText1,
+        children: const <TextSpan>[
+          TextSpan(text: "各硬貨の枚数から合計を求める。"),
+        ],
+      ))
     ];
   }
 
@@ -176,68 +137,6 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
     );
-  }
-
-  ///入力するためのアイテムを取得する
-  Row inputItems(int index) {
-    return Row(children: [
-      SizedBox(
-          width: 90.0,
-          child: Text("${moneyTypes[index]}円",
-              textAlign: TextAlign.right,
-              style: const TextStyle(
-                fontSize: 20.0,
-              ))),
-      const SizedBox(width: 10.0),
-      SizedBox(
-          width: 40.0,
-          height: 40.0,
-          child: ElevatedButton(
-            onPressed: () {
-              onButtonPressed(index, -1);
-            },
-            child: const Text("-", textAlign: TextAlign.center),
-          )),
-      const SizedBox(width: 10.0),
-      //入力
-      Expanded(
-        child: Center(
-          child: SizedBox(
-            height: 40.0,
-            child: TextField(
-              textAlignVertical: TextAlignVertical.center,
-              enabled: true,
-              maxLengthEnforcement: MaxLengthEnforcement.none,
-              maxLength: 10,
-              maxLines: 1,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              controller: moneyInputTextController[index],
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                  counterText: '',
-                  border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.only(
-                    left: 10,
-                    bottom: 20,
-                  )),
-              onChanged: (e) {
-                handleText(e, index);
-              },
-            ),
-          ),
-        ),
-      ),
-      const SizedBox(width: 10.0),
-      SizedBox(
-          width: 40.0,
-          height: 40.0,
-          child: ElevatedButton(
-            onPressed: () {
-              onButtonPressed(index, 1);
-            },
-            child: const Text("+", textAlign: TextAlign.center),
-          ))
-    ]);
   }
 
   //金種切り替えのトグルボタン
