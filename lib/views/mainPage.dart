@@ -54,7 +54,7 @@ class MainPageState extends State<MainPage> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(vertical: 10.0 , horizontal: 3.0),
           child: Column(children: [
             Expanded(
                 child: ListView.builder(
