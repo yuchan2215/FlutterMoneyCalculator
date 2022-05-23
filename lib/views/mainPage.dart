@@ -95,7 +95,7 @@ class MainPageState extends State<MainPage> {
           }
         });
       },
-      children: const [Text("1"), Text("10"), Text("20"), Text("50")],
+      children: List.generate(addMoneyTypes.length, (index) => Text(addMoneyTypes[index].toString())),
     );
   }
 
