@@ -11,31 +11,36 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
+///使用する硬貨の種類
 final List<int> moneyTypes = [1, 5, 10, 50, 100, 500, 1000, 2000, 5000, 10000];
+final List<int> addMoneyTypes = [1, 10, 20, 50];
 
 class _MainPageState extends State<MainPage> {
-  int sumMoney = 0;
-  var isSelected = <bool>[true, false, false, false];
-  final buttonMoneyType = <int>[1, 10, 20, 50];
-  var moneys = List.generate(moneyTypes.length, (index) => 0);
-  var textController = List.generate(
-      moneyTypes.length, (index) => TextEditingController(text: "0"));
+  int sumMoney = 0; //合計金額
+
+  var selectedAddMoneyType = List.generate(
+      addMoneyTypes.length, (index) => index == 0); //選択されている追加するお金の種類
+
+  var moneyInputTextController = List.generate(moneyTypes.length,
+      (index) => TextEditingController(text: "0")); //入力値をまとめておくコントローラー
+
   Future<PackageInfo> info = PackageInfo.fromPlatform();
 
+  //プラスまたはマイナスボタンが押された時
   void onButtonPressed(int index, int value) {
     int addValue = getSelectMoneyType() * value;
-    String nowValue = textController[index].value.text;
+    String nowValue = moneyInputTextController[index].value.text;
     int nowIntValue = int.tryParse(nowValue) ?? 0;
     int newValue = nowIntValue + addValue;
     if (newValue < 0) newValue = 0;
-    moneys[index] = newValue;
-    textController[index].text = newValue.toString();
+    moneyInputTextController[index].text = newValue.toString();
     calcSumMoney();
   }
 
+  //選択されている
   int getSelectMoneyType() {
-    for (int i = 0; i < buttonMoneyType.length; i++) {
-      if (isSelected[i]) return buttonMoneyType[i];
+    for (int i = 0; i < addMoneyTypes.length; i++) {
+      if (selectedAddMoneyType[i]) return addMoneyTypes[i];
     }
     return 0;
   }
@@ -45,30 +50,39 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       int tempSum = 0;
       for (int i = 0; i < moneyTypes.length; i++) {
-        tempSum += moneyTypes[i] * moneys[i];
+        int inputMoney = getInputMoney(i);
+        tempSum += moneyTypes[i] * inputMoney;
       }
       sumMoney = tempSum;
     });
   }
 
+  //コントローラーから、入力された数値を取得する。
+  int getInputMoney(int index){
+    TextEditingController controller = moneyInputTextController[index];
+    String inputText = controller.value.text;
+    int inputInt = int.tryParse(inputText) ?? 0;
+    return inputInt;
+  }
+
   //入力部から送られてくるメッセージをハンドルする。
   void handleText(String e, int index) {
     //intにパースできなければ0を入れる
-    int value = int.tryParse(textController[index].value.text) ?? 0;
+    int value = int.tryParse(moneyInputTextController[index].value.text) ?? 0;
     int length = value.toString().length;
     //もし不正な入力値(空または文字列の長さが1ではないが、数字上は0)ならリセットする
     if (e.isEmpty || (value == 0 && e.length != 1)) {
-      textController[index].text = "0";
-      textController[index].selection =
+      moneyInputTextController[index].text = "0";
+      moneyInputTextController[index].selection =
           TextSelection.fromPosition(const TextPosition(offset: 1));
       //0xxxxの形式になったとき、0を消してカーソルを戻す。
     } else if (length != e.length) {
-      int newOffset = textController[index].selection.extent.offset - 1;
-      textController[index].text = value.toString();
-      textController[index].selection =
+      int newOffset =
+          moneyInputTextController[index].selection.extent.offset - 1;
+      moneyInputTextController[index].text = value.toString();
+      moneyInputTextController[index].selection =
           TextSelection.fromPosition(TextPosition(offset: newOffset));
     }
-    moneys[index] = value;
     calcSumMoney();
   }
 
@@ -197,7 +211,7 @@ class _MainPageState extends State<MainPage> {
               maxLength: 10,
               maxLines: 1,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              controller: textController[index],
+              controller: moneyInputTextController[index],
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
                   counterText: '',
@@ -229,16 +243,16 @@ class _MainPageState extends State<MainPage> {
   //金種切り替えのトグルボタン
   ToggleButtons toggleMoneyTypes() {
     return ToggleButtons(
-      isSelected: isSelected,
+      isSelected: selectedAddMoneyType,
       onPressed: (int index) {
         setState(() {
           for (int buttonIndex = 0;
-          buttonIndex < isSelected.length;
-          buttonIndex++) {
+              buttonIndex < selectedAddMoneyType.length;
+              buttonIndex++) {
             if (buttonIndex == index) {
-              isSelected[buttonIndex] = true;
+              selectedAddMoneyType[buttonIndex] = true;
             } else {
-              isSelected[buttonIndex] = false;
+              selectedAddMoneyType[buttonIndex] = false;
             }
           }
         });
