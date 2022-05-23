@@ -25,6 +25,10 @@ class MainPageState extends State<MainPage> {
 
   Future<PackageInfo> info = PackageInfo.fromPlatform();
 
+  String getSumMoneyString(){
+    NumberFormat format = NumberFormat("#,##0");
+    return format.format(sumMoney);
+  }
   //合計金額を計算して更新通知をする。
   void calcSumMoney() {
     setState(() {
@@ -168,7 +172,7 @@ class MainPageState extends State<MainPage> {
         children: [
           const Text("合計金額:"),
           Text(
-            "$sumMoney",
+            getSumMoneyString(),
             style: const TextStyle(
               fontSize: 40.0,
             ),
